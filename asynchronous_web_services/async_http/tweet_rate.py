@@ -19,16 +19,12 @@ access_token = "43530233-AMI6KwoJxrjhpjYhzGSeBGTDNDL31glyS7lKYKK5h"
 access_secret = "an3tGgmAlM3J3X7vz3YdFYu87cKwHtTfUKTqqIoY5A"
 
 
-def request_twitter(url, key, secret, http_method = 'GET', post_body = '', http_headers = ''):
+def request_twitter(url, http_method = 'GET', post_body = '', http_headers = ''):
     consumer = oauth.Consumer(key = consumer_key, secret = consumer_secret)
-    token = oauth.Token(key = key, secret = secret)
+    token = oauth.Token(key = access_token, secret = access_secret)
     client = oauth.Client(consumer, token)
 
-    request = client.request(
-        url,
-        method = http_method,
-        body = post_body,
-        headers = http_headers)
+    request = client.request(url, method = http_method, body = post_body, headers = http_headers)
 
     return request
 
@@ -36,9 +32,7 @@ class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         query = self.get_argument('q')
         request, response = request_twitter('https://api.twitter.com/1.1/search/tweets.json?' + \
-                                            urllib.urlencode({'q': query, "result_type": "recent", "count": 100 }),
-                                            access_token,
-                                            access_secret)
+                                            urllib.urlencode({'q': query, "result_type": "recent", "count": 100 }))
         body = json.loads(response)
         result_count = len(body['statuses'])
         now = datetime.datetime.utcnow()
